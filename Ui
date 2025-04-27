@@ -1,35 +1,38 @@
---// Full Library đẹp như bạn yêu cầu
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+
 local Library = {}
 
 function Library:CreateWindow(name)
-    local main = Instance.new("ScreenGui")
-    main.Name = "CustomLibraryUI"
-    main.Parent = game:GetService("CoreGui")
-
-    local holder = Instance.new("Frame")
-    holder.Size = UDim2.new(0, 450, 0, 320)
-    holder.Position = UDim2.new(0.5, -225, 0.5, -160)
-    holder.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    local main = Instance.new("ScreenGui", game.CoreGui)
+    local holder = Instance.new("Frame", main)
+    holder.Size = UDim2.new(0, 500, 0, 320)
+    holder.Position = UDim2.new(0.5, -250, 0.5, -160)
+    holder.BackgroundColor3 = Color3.fromRGB(25,25,25)
     holder.BorderSizePixel = 0
-    holder.Parent = main
 
-    local corner = Instance.new("UICorner", holder)
-    corner.CornerRadius = UDim.new(0, 10)
-
-    local stroke = Instance.new("UIStroke", holder)
-    stroke.Color = Color3.fromRGB(80,80,80)
-    stroke.Thickness = 2
+    local uicorner = Instance.new("UICorner", holder)
+    uicorner.CornerRadius = UDim.new(0, 12)
 
     local title = Instance.new("TextLabel", holder)
     title.Size = UDim2.new(1, 0, 0, 40)
-    title.Position = UDim2.new(0, 0, 0, 0)
     title.BackgroundTransparency = 1
-    title.Text = name or "Tên UI - By Bạn"
+    title.Text = name or "UI - By Bạn"
     title.Font = Enum.Font.GothamBold
     title.TextColor3 = Color3.fromRGB(255,255,255)
-    title.TextSize = 20
+    title.TextSize = 22
+
+    local tabs = Instance.new("Frame", holder)
+    tabs.Size = UDim2.new(0, 120, 1, -40)
+    tabs.Position = UDim2.new(0, 0, 0, 40)
+    tabs.BackgroundColor3 = Color3.fromRGB(35,35,35)
+
+    local tabHolder = Instance.new("Frame", holder)
+    tabHolder.Size = UDim2.new(1, -120, 1, -40)
+    tabHolder.Position = UDim2.new(0, 120, 0, 40)
+    tabHolder.BackgroundTransparency = 1
+
+    Instance.new("UIListLayout", tabs).Padding = UDim.new(0, 5)
 
     holder.BackgroundTransparency = 1
     task.spawn(function()
@@ -39,42 +42,24 @@ function Library:CreateWindow(name)
         end
     end)
 
-    local tabs = Instance.new("Frame", holder)
-    tabs.Size = UDim2.new(0, 100, 1, -40)
-    tabs.Position = UDim2.new(0, 0, 0, 40)
-    tabs.BackgroundColor3 = Color3.fromRGB(40,40,40)
-
-    local tabHolder = Instance.new("Frame", holder)
-    tabHolder.Size = UDim2.new(1, -100, 1, -40)
-    tabHolder.Position = UDim2.new(0, 100, 0, 40)
-    tabHolder.BackgroundTransparency = 1
-
-    local uiListLayout = Instance.new("UIListLayout", tabs)
-    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    uiListLayout.Padding = UDim.new(0, 5)
-
     return holder, tabs, tabHolder
 end
 
 function Library:CreateTab(tabs, tabHolder, name)
-    local button = Instance.new("TextButton")
+    local button = Instance.new("TextButton", tabs)
     button.Size = UDim2.new(1, 0, 0, 30)
-    button.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    button.BackgroundColor3 = Color3.fromRGB(45,45,45)
     button.Text = name or "Tab"
     button.TextColor3 = Color3.fromRGB(255,255,255)
     button.Font = Enum.Font.GothamBold
-    button.TextSize = 16
-    button.Parent = tabs
+    button.TextSize = 18
 
-    local page = Instance.new("Frame")
+    local page = Instance.new("Frame", tabHolder)
     page.Size = UDim2.new(1, 0, 1, 0)
     page.BackgroundTransparency = 1
     page.Visible = false
-    page.Parent = tabHolder
 
-    local layout = Instance.new("UIListLayout", page)
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Padding = UDim.new(0, 6)
+    Instance.new("UIListLayout", page).Padding = UDim.new(0, 6)
 
     button.MouseButton1Click:Connect(function()
         for _, v in pairs(tabHolder:GetChildren()) do
@@ -89,17 +74,15 @@ function Library:CreateTab(tabs, tabHolder, name)
 end
 
 function Library:CreateButton(tab, options)
-    local button = Instance.new("TextButton")
+    local button = Instance.new("TextButton", tab)
     button.Size = UDim2.new(1, -20, 0, 40)
-    button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    button.BackgroundColor3 = Color3.fromRGB(60,60,60)
     button.Text = options.Name or "Button"
     button.TextColor3 = Color3.fromRGB(255,255,255)
     button.Font = Enum.Font.GothamBold
     button.TextSize = 18
-    button.Parent = tab
 
-    local corner = Instance.new("UICorner", button)
-    corner.CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", button).CornerRadius = UDim.new(0, 8)
 
     button.MouseButton1Click:Connect(function()
         if options.Callback then
@@ -111,16 +94,13 @@ function Library:CreateButton(tab, options)
 end
 
 function Library:CreateToggle(tab, options)
-    local holder = Instance.new("Frame")
+    local holder = Instance.new("Frame", tab)
     holder.Size = UDim2.new(1, -20, 0, 40)
-    holder.BackgroundColor3 = Color3.fromRGB(70,70,70)
-    holder.Parent = tab
-
-    local corner = Instance.new("UICorner", holder)
-    corner.CornerRadius = UDim.new(0, 6)
+    holder.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    Instance.new("UICorner", holder).CornerRadius = UDim.new(0,8)
 
     local label = Instance.new("TextLabel", holder)
-    label.Size = UDim2.new(0.8, 0, 1, 0)
+    label.Size = UDim2.new(0.7, 0, 1, 0)
     label.BackgroundTransparency = 1
     label.Text = options.Name or "Toggle"
     label.TextColor3 = Color3.fromRGB(255,255,255)
@@ -128,62 +108,44 @@ function Library:CreateToggle(tab, options)
     label.TextSize = 18
     label.TextXAlignment = Enum.TextXAlignment.Left
 
-    local toggleBtn = Instance.new("TextButton", holder)
-    toggleBtn.Size = UDim2.new(0, 40, 0, 20)
-    toggleBtn.Position = UDim2.new(1, -50, 0.5, -10)
-    toggleBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
-    toggleBtn.Text = ""
-    toggleBtn.AutoButtonColor = false
+    local toggle = Instance.new("TextButton", holder)
+    toggle.Size = UDim2.new(0, 40, 0, 20)
+    toggle.Position = UDim2.new(1, -50, 0.5, -10)
+    toggle.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    toggle.Text = ""
+    toggle.AutoButtonColor = false
+    Instance.new("UICorner", toggle).CornerRadius = UDim.new(1,0)
 
-    local toggleCorner = Instance.new("UICorner", toggleBtn)
-    toggleCorner.CornerRadius = UDim.new(1, 0)
+    local on = false
 
-    local tick = Instance.new("ImageLabel", toggleBtn)
-    tick.Size = UDim2.new(1, -6, 1, -6)
-    tick.Position = UDim2.new(0, 3, 0, 3)
-    tick.BackgroundTransparency = 1
-    tick.Image = "rbxassetid://6031068426"
-    tick.ImageTransparency = 1
-
-    local toggled = options.Default or false
-    if toggled then
-        tick.ImageTransparency = 0
-        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
-    end
-
-    toggleBtn.MouseButton1Click:Connect(function()
-        toggled = not toggled
-        if toggled then
-            TweenService:Create(toggleBtn, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(0,170,255)}):Play()
-            TweenService:Create(tick, TweenInfo.new(0.25), {ImageTransparency = 0}):Play()
+    toggle.MouseButton1Click:Connect(function()
+        on = not on
+        if on then
+            TweenService:Create(toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(0,180,255)}):Play()
         else
-            TweenService:Create(toggleBtn, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(50,50,50)}):Play()
-            TweenService:Create(tick, TweenInfo.new(0.25), {ImageTransparency = 1}):Play()
+            TweenService:Create(toggle, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(40,40,40)}):Play()
         end
         if options.Callback then
-            options.Callback(toggled)
+            options.Callback(on)
         end
     end)
 
-    return toggleBtn
+    return toggle
 end
 
 function Library:CreateKeybind(tab, options)
-    local keybind = Instance.new("TextButton")
+    local keybind = Instance.new("TextButton", tab)
     keybind.Size = UDim2.new(1, -20, 0, 40)
-    keybind.BackgroundColor3 = Color3.fromRGB(70,70,70)
-    keybind.Text = options.Name .. ": [" .. (options.KeyName or "None") .. "]"
+    keybind.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    keybind.Text = options.Name .. ": ["..(options.KeyName or "None").."]"
     keybind.TextColor3 = Color3.fromRGB(255,255,255)
     keybind.Font = Enum.Font.GothamBold
     keybind.TextSize = 18
-    keybind.Parent = tab
-
-    local corner = Instance.new("UICorner", keybind)
-    corner.CornerRadius = UDim.new(0, 6)
+    Instance.new("UICorner", keybind).CornerRadius = UDim.new(0,8)
 
     local key = options.Key or Enum.KeyCode.RightShift
 
-    UserInputService.InputBegan:Connect(function(input, gpe)
+    UserInputService.InputBegan:Connect(function(input,gpe)
         if gpe then return end
         if input.KeyCode == key then
             if options.Callback then
@@ -195,5 +157,37 @@ function Library:CreateKeybind(tab, options)
     return keybind
 end
 
--- Bạn có cần mình thêm cả ColorPicker nữa không? (nếu cần mình gộp luôn!)
+function Library:CreateColorPicker(tab, options)
+    local holder = Instance.new("Frame", tab)
+    holder.Size = UDim2.new(1, -20, 0, 60)
+    holder.BackgroundColor3 = Color3.fromRGB(60,60,60)
+    Instance.new("UICorner", holder).CornerRadius = UDim.new(0,8)
+
+    local label = Instance.new("TextLabel", holder)
+    label.Size = UDim2.new(1, 0, 0, 20)
+    label.BackgroundTransparency = 1
+    label.Position = UDim2.new(0, 0, 0, 0)
+    label.Text = options.Name or "Color Picker"
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 16
+
+    local box = Instance.new("TextButton", holder)
+    box.Size = UDim2.new(0, 40, 0, 20)
+    box.Position = UDim2.new(0, 10, 0, 30)
+    box.BackgroundColor3 = options.Default or Color3.fromRGB(255,0,0)
+    box.Text = ""
+    Instance.new("UICorner", box).CornerRadius = UDim.new(1,0)
+
+    box.MouseButton1Click:Connect(function()
+        local color = Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255))
+        box.BackgroundColor3 = color
+        if options.Callback then
+            options.Callback(color)
+        end
+    end)
+
+    return box
+end
+
 return Library
