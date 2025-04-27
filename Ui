@@ -1,0 +1,199 @@
+--// Full Library đẹp như bạn yêu cầu
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Library = {}
+
+function Library:CreateWindow(name)
+    local main = Instance.new("ScreenGui")
+    main.Name = "CustomLibraryUI"
+    main.Parent = game:GetService("CoreGui")
+
+    local holder = Instance.new("Frame")
+    holder.Size = UDim2.new(0, 450, 0, 320)
+    holder.Position = UDim2.new(0.5, -225, 0.5, -160)
+    holder.BackgroundColor3 = Color3.fromRGB(30,30,30)
+    holder.BorderSizePixel = 0
+    holder.Parent = main
+
+    local corner = Instance.new("UICorner", holder)
+    corner.CornerRadius = UDim.new(0, 10)
+
+    local stroke = Instance.new("UIStroke", holder)
+    stroke.Color = Color3.fromRGB(80,80,80)
+    stroke.Thickness = 2
+
+    local title = Instance.new("TextLabel", holder)
+    title.Size = UDim2.new(1, 0, 0, 40)
+    title.Position = UDim2.new(0, 0, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = name or "Tên UI - By Bạn"
+    title.Font = Enum.Font.GothamBold
+    title.TextColor3 = Color3.fromRGB(255,255,255)
+    title.TextSize = 20
+
+    holder.BackgroundTransparency = 1
+    task.spawn(function()
+        for i = 1, 10 do
+            holder.BackgroundTransparency = 1 - i * 0.1
+            task.wait(0.02)
+        end
+    end)
+
+    local tabs = Instance.new("Frame", holder)
+    tabs.Size = UDim2.new(0, 100, 1, -40)
+    tabs.Position = UDim2.new(0, 0, 0, 40)
+    tabs.BackgroundColor3 = Color3.fromRGB(40,40,40)
+
+    local tabHolder = Instance.new("Frame", holder)
+    tabHolder.Size = UDim2.new(1, -100, 1, -40)
+    tabHolder.Position = UDim2.new(0, 100, 0, 40)
+    tabHolder.BackgroundTransparency = 1
+
+    local uiListLayout = Instance.new("UIListLayout", tabs)
+    uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    uiListLayout.Padding = UDim.new(0, 5)
+
+    return holder, tabs, tabHolder
+end
+
+function Library:CreateTab(tabs, tabHolder, name)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 0, 30)
+    button.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    button.Text = name or "Tab"
+    button.TextColor3 = Color3.fromRGB(255,255,255)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 16
+    button.Parent = tabs
+
+    local page = Instance.new("Frame")
+    page.Size = UDim2.new(1, 0, 1, 0)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Parent = tabHolder
+
+    local layout = Instance.new("UIListLayout", page)
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
+    layout.Padding = UDim.new(0, 6)
+
+    button.MouseButton1Click:Connect(function()
+        for _, v in pairs(tabHolder:GetChildren()) do
+            if v:IsA("Frame") then
+                v.Visible = false
+            end
+        end
+        page.Visible = true
+    end)
+
+    return page
+end
+
+function Library:CreateButton(tab, options)
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -20, 0, 40)
+    button.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    button.Text = options.Name or "Button"
+    button.TextColor3 = Color3.fromRGB(255,255,255)
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 18
+    button.Parent = tab
+
+    local corner = Instance.new("UICorner", button)
+    corner.CornerRadius = UDim.new(0, 6)
+
+    button.MouseButton1Click:Connect(function()
+        if options.Callback then
+            options.Callback()
+        end
+    end)
+
+    return button
+end
+
+function Library:CreateToggle(tab, options)
+    local holder = Instance.new("Frame")
+    holder.Size = UDim2.new(1, -20, 0, 40)
+    holder.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    holder.Parent = tab
+
+    local corner = Instance.new("UICorner", holder)
+    corner.CornerRadius = UDim.new(0, 6)
+
+    local label = Instance.new("TextLabel", holder)
+    label.Size = UDim2.new(0.8, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = options.Name or "Toggle"
+    label.TextColor3 = Color3.fromRGB(255,255,255)
+    label.Font = Enum.Font.GothamBold
+    label.TextSize = 18
+    label.TextXAlignment = Enum.TextXAlignment.Left
+
+    local toggleBtn = Instance.new("TextButton", holder)
+    toggleBtn.Size = UDim2.new(0, 40, 0, 20)
+    toggleBtn.Position = UDim2.new(1, -50, 0.5, -10)
+    toggleBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+    toggleBtn.Text = ""
+    toggleBtn.AutoButtonColor = false
+
+    local toggleCorner = Instance.new("UICorner", toggleBtn)
+    toggleCorner.CornerRadius = UDim.new(1, 0)
+
+    local tick = Instance.new("ImageLabel", toggleBtn)
+    tick.Size = UDim2.new(1, -6, 1, -6)
+    tick.Position = UDim2.new(0, 3, 0, 3)
+    tick.BackgroundTransparency = 1
+    tick.Image = "rbxassetid://6031068426"
+    tick.ImageTransparency = 1
+
+    local toggled = options.Default or false
+    if toggled then
+        tick.ImageTransparency = 0
+        toggleBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+    end
+
+    toggleBtn.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        if toggled then
+            TweenService:Create(toggleBtn, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(0,170,255)}):Play()
+            TweenService:Create(tick, TweenInfo.new(0.25), {ImageTransparency = 0}):Play()
+        else
+            TweenService:Create(toggleBtn, TweenInfo.new(0.25), {BackgroundColor3 = Color3.fromRGB(50,50,50)}):Play()
+            TweenService:Create(tick, TweenInfo.new(0.25), {ImageTransparency = 1}):Play()
+        end
+        if options.Callback then
+            options.Callback(toggled)
+        end
+    end)
+
+    return toggleBtn
+end
+
+function Library:CreateKeybind(tab, options)
+    local keybind = Instance.new("TextButton")
+    keybind.Size = UDim2.new(1, -20, 0, 40)
+    keybind.BackgroundColor3 = Color3.fromRGB(70,70,70)
+    keybind.Text = options.Name .. ": [" .. (options.KeyName or "None") .. "]"
+    keybind.TextColor3 = Color3.fromRGB(255,255,255)
+    keybind.Font = Enum.Font.GothamBold
+    keybind.TextSize = 18
+    keybind.Parent = tab
+
+    local corner = Instance.new("UICorner", keybind)
+    corner.CornerRadius = UDim.new(0, 6)
+
+    local key = options.Key or Enum.KeyCode.RightShift
+
+    UserInputService.InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        if input.KeyCode == key then
+            if options.Callback then
+                options.Callback()
+            end
+        end
+    end)
+
+    return keybind
+end
+
+-- Bạn có cần mình thêm cả ColorPicker nữa không? (nếu cần mình gộp luôn!)
+return Library
